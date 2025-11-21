@@ -3,7 +3,7 @@
 # gpdev - Git Push and Deploy
 # Dette scriptet pusher endringer til GitHub og deployer til Shopify
 
-set -e  # Stopp ved feil
+# Ikke stopp ved feil - fortsett med deploy selv om git push feiler
 
 echo "🚀 Starter gpdev - Git Push and Deploy..."
 
@@ -28,7 +28,12 @@ git commit -m "$COMMIT_MSG" || echo "⚠️  Ingen endringer å committe"
 
 # 4. Push til GitHub
 echo -e "${BLUE}📤 Pusher til GitHub...${NC}"
-git push origin main || git push origin master || echo "⚠️  Kunne ikke pushe til GitHub"
+CURRENT_BRANCH=$(git branch --show-current)
+if git push origin "$CURRENT_BRANCH" 2>&1; then
+    echo -e "${GREEN}✅ Pushet til GitHub${NC}"
+else
+    echo -e "${YELLOW}⚠️  Git push feilet, men fortsetter med Shopify deploy...${NC}"
+fi
 
 # 5. Deploy til Shopify
 echo -e "${BLUE}🛍️  Deployer til Shopify...${NC}"
