@@ -1,11 +1,10 @@
 #!/bin/bash
 
-# gpdev - Git Push and Deploy
-# Dette scriptet pusher endringer til GitHub og deployer til Shopify
+# gpdev - Git Push to GitHub
+# Dette scriptet pusher endringer til GitHub
+# Du kan deploye til Shopify manuelt fra GitHub eller via Shopify CLI
 
-# Ikke stopp ved feil - fortsett med deploy selv om git push feiler
-
-echo "🚀 Starter gpdev - Git Push and Deploy..."
+echo "🚀 Starter gpdev - Git Push to GitHub..."
 
 # Fargekoder for output
 GREEN='\033[0;32m'
@@ -28,17 +27,13 @@ git commit -m "$COMMIT_MSG" || echo "⚠️  Ingen endringer å committe"
 
 # 4. Push til GitHub
 echo -e "${BLUE}📤 Pusher til GitHub...${NC}"
-CURRENT_BRANCH=$(git branch --show-current)
-# Bruk eksplisitt push til main (vi vet dette fungerer)
 if git push origin main 2>&1; then
     echo -e "${GREEN}✅ Pushet til GitHub${NC}"
+    echo -e "${BLUE}💡 For å deploye til Shopify, kjør: shopify theme push --live${NC}"
 else
-    echo -e "${YELLOW}⚠️  Git push feilet, men fortsetter med Shopify deploy...${NC}"
+    echo -e "${YELLOW}⚠️  Git push feilet${NC}"
+    exit 1
 fi
-
-# 5. Deploy til Shopify
-echo -e "${BLUE}🛍️  Deployer til Shopify...${NC}"
-shopify theme push --live || echo "⚠️  Kunne ikke deploye til Shopify"
 
 echo -e "${GREEN}✅ gpdev fullført!${NC}"
 
