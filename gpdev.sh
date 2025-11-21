@@ -2,7 +2,7 @@
 
 # gpdev - Git Push to GitHub
 # Dette scriptet pusher endringer til GitHub
-# Du kan deploye til Shopify manuelt fra GitHub eller via Shopify CLI
+# GitHub deployer automatisk til testshoppen
 
 echo "🚀 Starter gpdev - Git Push to GitHub..."
 
@@ -29,7 +29,7 @@ git commit -m "$COMMIT_MSG" || echo "⚠️  Ingen endringer å committe"
 echo -e "${BLUE}📤 Pusher til GitHub...${NC}"
 if git push origin main 2>&1; then
     echo -e "${GREEN}✅ Pushet til GitHub${NC}"
-    echo -e "${BLUE}💡 For å deploye til Shopify, kjør: shopify theme push --live${NC}"
+    echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
 else
     echo -e "${YELLOW}⚠️  Git push feilet${NC}"
     exit 1
