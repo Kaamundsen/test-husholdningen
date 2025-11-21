@@ -1,0 +1,44 @@
+{% comment %}
+  Rekursiv renderer for side-meny
+  Params:
+   - link (Shopify link object)
+   - current_url (string)
+   - level (int)
+   - expand_first (bool)
+   - show_levels (int)
+{% endcomment %}
+
+{% assign is_active = false %}
+{% if request.path == link.url or current_url contains link.url %}
+  {% assign is_active = true %}
+{% endif %}
+
+<li class="bf-nav__item">
+  {% if link.links != blank and level < show_levels %}
+    {%- assign start_open = false -%}
+    {%- if level == 1 and expand_first -%}{% assign start_open = true %}{%- endif -%}
+
+    <button class="bf-nav__button" type="button" data-toggle aria-expanded="{{ start_open }}">
+      <span>{{ link.title }}</span>
+      <svg class="bf-nav__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+           style="transform: {% if start_open %}rotate(90deg){% else %}rotate(0deg){% endif %};">
+        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <ul class="bf-nav__group" aria-hidden="{% if start_open %}false{% else %}true{% endif %}">
+      {% for child in link.links %}
+        {% render 'bf-side-nav-item',
+          link: child,
+          current_url: current_url,
+          level: level | plus: 1,
+          expand_first: false,
+          show_levels: show_levels
+        %}
+      {% endfor %}
+    </ul>
+
+  {% else %}
+    <a class="bf-nav__link {% if is_active %}is-active{% endif %}" href="{{ link.url }}">{{ link.title }}</a>
+  {% endif %}
+</li>

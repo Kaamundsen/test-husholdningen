@@ -1,0 +1,148 @@
+{% comment %}
+  Banner Carousel (2-up) – Splide.js
+  Viser 2 bannere på desktop, 1 på mobil. Dots under, perMove: 1.
+{% endcomment %}
+
+<link
+  id="splide-css"
+  href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css"
+  rel="stylesheet"
+  onload="this.media='all'"
+/>
+<style>
+  .bf-banner-carousel {
+    margin: 0 auto;
+    max-width: {{ section.settings.max_width }}px;
+  }
+  /* 2:1-format (500x250) bevares pent på tvers av skjermer */
+  .bf-banner-carousel .bf-banner-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 1;
+    object-fit: cover;
+    display: block;
+    border-radius: {{ section.settings.radius }}px;
+  }
+  /* Flytt dottene under karusellen */
+.bf-banner-carousel .splide {
+  padding-bottom: 0;                 /* fjern ekstra bunn-padding */
+}
+.bf-banner-carousel .splide__track {
+  margin-bottom: 12px;               /* gi plass til dottene under */
+}
+.bf-banner-carousel .splide__pagination {
+  position: static;                  /* ikke absolute – legg den i normal flyt */
+  margin-top: 8px;                   /* litt luft fra bildene */
+  display: flex;                     /* sentrer dottene */
+  justify-content: center;
+}
+</style>
+
+<div class="bf-banner-carousel" id="bf-{{ section.id }}">
+  <div class="splide" aria-label="{{ section.settings.aria_label | escape }}">
+    <div class="splide__track">
+      <ul class="splide__list">
+        {% for block in section.blocks %}
+          {% if block.type == 'banner' and block.settings.image != blank %}
+            <li class="splide__slide" {{ block.shopify_attributes }}>
+              {% if block.settings.link != blank %}<a href="{{ block.settings.link }}">{% endif %}
+                {{ block.settings.image
+                  | image_url: width: 1200
+                  | image_tag:
+                    widths: '500,700,900,1200',
+                    alt: block.settings.alt,
+                    loading: 'lazy',
+                    class: 'bf-banner-img'
+                }}
+              {% if block.settings.link != blank %}</a>{% endif %}
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    // Last Splide JS kun én gang
+    function loadSplide(cb) {
+      if (window.Splide) return cb();
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js';
+      s.onload = cb;
+      document.head.appendChild(s);
+    }
+
+    function init() {
+      var root = document.getElementById('bf-{{ section.id }}');
+      if (!root) return;
+      var el = root.querySelector('.splide');
+      if (!el) return;
+
+      // Konfig: 2 på desktop, 1 på mobil – flytter 1 og 1
+      var slider = new Splide(el, {
+  type: '{{ section.settings.loop | default: true | json }}' == 'true' ? 'loop' : 'slide',
+  perPage: 2,
+  perMove: 1,
+  gap: '10px',
+  arrows: {{ section.settings.show_arrows | default: false | json }},
+  pagination: {{ section.settings.show_dots | default: true | json }},
+  autoplay: {{ section.settings.autoplay | default: true | json }},
+  interval: {{ section.settings.interval | default: 3500 }},
+  pauseOnHover: true,
+  drag: true,
+  rewind: false,
+
+  // Viktig: bruk "min" så vi eksplisitt sier 1 på små skjermer, 2 fra 641px+
+  mediaQuery: 'min',
+  breakpoints: {
+    0:   { perPage: 1 },
+    641: { perPage: 2 }
+  }
+});
+      slider.mount();
+    }
+
+    loadSplide(init);
+    document.addEventListener('shopify:section:load', function(e) {
+      if (e.detail && e.detail.sectionId === '{{ section.id }}') loadSplide(init);
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Banner carousel (2-up)",
+  "tag": "section",
+  "class": "section bf-banners",
+  "settings": [
+    { "type": "text", "id": "aria_label", "label": "Aria label", "default": "Promobannere" },
+    { "type": "range", "id": "max_width", "min": 800, "max": 2000, "step": 20, "unit": "px", "label": "Maks bredde", "default": 1400 },
+    { "type": "range", "id": "radius", "min": 0, "max": 24, "step": 2, "unit": "px", "label": "Hjørneradius", "default": 8 },
+    { "type": "text", "id": "gap", "label": "Avstand mellom slides", "default": "16px" },
+    { "type": "checkbox", "id": "show_arrows", "label": "Vis piler", "default": false },
+    { "type": "checkbox", "id": "show_dots", "label": "Vis dotter (pagination)", "default": true },
+    { "type": "checkbox", "id": "autoplay", "label": "Autoplay", "default": true },
+    { "type": "range", "id": "interval", "min": 1500, "max": 8000, "step": 250, "unit": "ms", "label": "Autoplay-intervall", "default": 3500 },
+    { "type": "checkbox", "id": "loop", "label": "Loop", "default": true },
+    { "type": "number", "id": "per_page_desktop", "label": "Slides per side (desktop)", "default": 2 },
+    { "type": "number", "id": "per_page_mobile", "label": "Slides per side (mobil)", "default": 1 }
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "Banner",
+      "limit": 30,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Bilde (500x250 anbefalt)" },
+        { "type": "text", "id": "alt", "label": "Alt-tekst" },
+        { "type": "url", "id": "link", "label": "Lenke (valgfri)" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Banner carousel (2-up)" }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,70 @@
+{% comment %}
+  Featured Collection – Husholdningen
+  Viser produkter fra valgt kolleksjon med vårt egendefinerte produktkort.
+{% endcomment %}
+
+<section class="section featured-hush" id="shopify-section-{{ section.id }}">
+  <div class="page-width">
+    {% if section.settings.heading != blank %}
+      <h2 class="title inline-richtext" style="margin-bottom:14px">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    {% assign col = collections[section.settings.collection] %}
+    {% if col and col.products_count > 0 %}
+      {% liquid
+        assign cols_desktop = section.settings.columns_desktop | default: 5
+        assign cols_mobile  = section.settings.columns_mobile  | default: 2
+        assign limit_count  = section.settings.products_to_show | default: 10
+      %}
+
+      <div class="bf-grid"
+           style="display:grid;grid-template-columns:repeat({{ cols_mobile }},1fr);gap:16px"
+           data-cols-desktop="{{ cols_desktop }}">
+        {% for product in col.products limit: limit_count %}
+          {% render 'card-product-husholdningen', product: product %}
+        {% endfor %}
+      </div>
+
+      <script>
+        // enkel responsiv kolonnejustering uten å være avhengig av temaklasser
+        (function(){
+          const wrap = document.currentScript.previousElementSibling;
+          const colsDesktop = parseInt(wrap.getAttribute('data-cols-desktop'),10) || 5;
+          function apply(){
+            if(window.matchMedia('(min-width: 992px)').matches){
+              wrap.style.gridTemplateColumns = 'repeat(' + colsDesktop + ', 1fr)';
+              wrap.style.gap = '16px';
+            }else{
+              wrap.style.gridTemplateColumns = 'repeat({{ cols_mobile }}, 1fr)';
+              wrap.style.gap = '12px';
+            }
+          }
+          apply();
+          window.addEventListener('resize', apply);
+          document.addEventListener('shopify:section:load', apply);
+        })();
+      </script>
+
+    {% else %}
+      <p>Velg en kolleksjon i seksjonsinnstillingene.</p>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "HH produkter",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Overskrift", "default": "Utvalgte produkter" },
+    { "type": "collection", "id": "collection", "label": "Kolleksjon" },
+    { "type": "range", "id": "products_to_show", "label": "Antall produkter", "min": 2, "max": 24, "step": 1, "default": 10 },
+    { "type": "range", "id": "columns_desktop", "label": "Kolonner desktop", "min": 2, "max": 6, "step": 1, "default": 5 },
+    { "type": "range", "id": "columns_mobile", "label": "Kolonner mobil", "min": 1, "max": 3, "step": 1, "default": 2 }
+  ],
+  "presets": [
+    { "name": "HH produkter" }
+  ]
+}
+{% endschema %}

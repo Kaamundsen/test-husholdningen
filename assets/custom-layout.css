@@ -1,0 +1,1349 @@
+/* ============================================================
+   1️⃣ GLOBAL BASIS – HUSHOLDNINGEN.NO
+   ============================================================ */
+
+   @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600&family=Barlow:wght@400&display=swap');
+
+   :root {
+     --page-width: 1240px;      /* total innholdsbredde */
+     --sidebar-width: 230px;    /* venstremeny bredde */
+     --sidebar-sticky-offset: 76px;
+     --gap-desktop: 12px;       /* luft mellom sidebar og innhold */
+
+     /* 🎨 Husholdningen – FARGEKONTROLL */
+     --hh-color-price: #111;           /* Vanlig pris (ikke på tilbud) - sort */
+     --hh-color-saleprice: #D61F26;    /* Tilbudspris / kampanjepris */
+     --hh-color-cartbtn: #D61F26;      /* Kjøpsknapp (handlekurv-ikon) */
+     --hh-color-trash: #D61F26;        /* Søppelbøtte-ikon */
+     --hh-color-badge: #D61F26;        /* "TILBUD"-badge bakgrunn */
+   }
+   
+   body {
+     background: #F7F5F5;
+     color: #111;
+     font-family: "Barlow", sans-serif;
+     font-weight: 400;
+     letter-spacing: 0.1px;
+     line-height: 1.3;
+     margin: 0;
+     padding: 0;
+   }
+   
+   /* Header og footer */
+   .header,
+   .header-wrapper { background: #7A0C71; color: #fff; }
+   footer,
+   .footer,
+   .footer-wrapper { background: #fff; }
+   
+   /* Bakgrunnsfarger for seksjoner */
+   #MainContent > .shopify-section:first-of-type:not(.bf-sidebar) { background: #fff; }
+   #MainContent .shopify-section:not(:first-of-type) { background: #F7F5F5; }
+   
+   /* Fjern globale gradienter */
+   html, body {
+     background-image: none !important;
+     background-attachment: scroll !important;
+     box-shadow: none !important;
+   }
+   .gradient { background-attachment: scroll !important; }
+   html::before, html::after { content: none !important; background: none !important; }
+   
+   
+/* ============================================================
+   2️⃣ NY LAYOUT – GLOBAL SIDEBAR + MAIN-AREA
+   ============================================================ */
+
+  :root {
+   --page-width: 1240px;
+   --sidebar-sticky-offset: 76px;
+   --gap-desktop: 12px;
+ }
+  
+  @media (min-width: 992px) {
+    .hh-layout {
+      max-width: var(--page-width);
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-start;
+      gap: var(--gap-desktop);
+    }
+  
+    /* SIDEBAR-KOLONNE */
+    .hh-layout__sidebar {
+      flex: 0 0 var(--sidebar-width);
+      width: var(--sidebar-width);
+      position: sticky;
+      top: var(--sidebar-sticky-offset);
+      z-index: 5;
+    }
+  
+    /* HOVEDINNHOLD-KOLONNE (banner + alle featured collections osv.) */
+    .hh-layout__main {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+  
+    /* Fjern ekstra padding rundt seksjonene inni main */
+    .hh-layout__main > .shopify-section > .page-width {
+      max-width: 100%;
+      padding: 0;
+      margin: 0;
+    }
+  }
+  
+ @media (max-width: 991px) {
+  .hh-layout {
+    max-width: 100%;
+    margin: 0;
+    display: block;
+  }
+
+  .hh-layout__sidebar {
+    position: static;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .hh-layout__main {
+    width: 100%;
+  }
+
+  /* 📱 Skjul den faste lista under "Meny" på mobil */
+  .bf-sidebar__nav {
+    display: none !important;
+  }
+
+  /* Sørg for at drawer-menyen fortsatt viser lenkene sine */
+  .bf-drawer .bf-nav {
+    display: block !important;
+  }
+}
+@media (max-width: 991px) {
+  .hh-layout {
+    max-width: 100%;
+    margin: 0;
+    display: block;
+  }
+
+  .hh-layout__sidebar {
+    position: static;
+    width: 100%;
+    margin-bottom: 8px; /* litt luft ned til banner */
+  }
+
+  .hh-layout__main {
+    width: 100%;
+  }
+
+  /* Skjul fast liste */
+  .bf-sidebar__nav {
+    display: none !important;
+  }
+
+  /* Sørg for at drawer-menyen fortsatt viser lenkene sine */
+  .bf-drawer .bf-nav {
+    display: block !important;
+  }
+
+  /* Skjul sidebar-knappen på mobil siden vi har en i header */
+  .bf-sidebar__toggle {
+    display: none !important;
+  }
+  
+  /* Skjul sidebar-innhold på mobil, men la drawer være tilgjengelig */
+  .section.bf-sidebar {
+    position: absolute !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    visibility: hidden !important;
+  }
+  
+  .bf-sidebar-box {
+    position: absolute !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    visibility: hidden !important;
+    background: transparent !important;
+    border: none !important;
+  }
+  
+  /* Skjul alt i sidebar-box bortsett fra drawer */
+  .bf-sidebar__heading,
+  .bf-sidebar__nav {
+    display: none !important;
+  }
+  
+  /* Sørg for at drawer er synlig og tilgjengelig - må være utenfor sidebar-box */
+  .bf-drawer,
+  .bf-drawer__backdrop {
+    position: fixed !important;
+    z-index: 999 !important;
+    visibility: visible !important;
+  }
+}
+
+/* Header padding og posisjonering */
+@media (min-width: 992px) and (max-width: 1239px) {
+  .header:not(.drawer-menu).page-width {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
+
+/* Mobil header styling */
+@media (max-width: 991px) {
+  /* Logo midtstilles */
+  .header__heading,
+  .header__heading-link {
+    justify-self: center !important;
+    text-align: center !important;
+  }
+  
+  /* Header padding 20px fra sidene - overstyr base.css .page-width padding (1.5rem = 24px) */
+  /* Overstyr alle varianter av header padding */
+  .header.page-width,
+  .header:not(.drawer-menu).page-width,
+  .section-header .header.page-width {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+  
+  /* Hamburger-meny styling */
+  .header__icons {
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  .header__icon--sidebar-menu {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-left: 12px !important;
+    margin-right: 0 !important;
+  }
+  
+  .header__icon--sidebar-menu .svg-wrapper {
+    width: 24px !important;
+    height: 15px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  .header__icon--sidebar-menu .svg-wrapper svg {
+    width: 24px !important;
+    height: 15px !important;
+  }
+  
+  .header__icon--sidebar-menu .svg-wrapper svg * {
+    fill: #7A0C71 !important;
+    stroke: #7A0C71 !important;
+  }
+  
+  /* Skjul header-drawer meny-knapp */
+  .header__icon--menu,
+  header-drawer {
+    display: none !important;
+  }
+}
+
+/* Skjul meny-knappen i sidemenyen fra 1199px og oppover */
+@media (min-width: 1199px) {
+  .bf-sidebar__toggle {
+    display: none !important;
+  }
+}
+
+/* Policy-sider og page-sider styling */
+/* Venstrejuster tekst på policy-sider og page-sider */
+.page-width--narrow .rte,
+.main-page-title + .rte,
+.page-title + .rte,
+.shopify-policy__body,
+.shopify-policy__body .rte,
+.shopify-policy__body p,
+.shopify-policy__body ul,
+.shopify-policy__body ol,
+.shopify-policy__body li,
+.shopify-policy__body div,
+.shopify-policy__body *,
+.shopify-policy__container,
+.shopify-policy__container * {
+  text-align: left !important;
+}
+
+/* Endre heading-font til Barlow Regular på page-sider og policy-sider */
+.page-title,
+.main-page-title,
+.shopify-policy__title,
+.shopify-policy__body h1,
+.shopify-policy__body h2,
+.shopify-policy__body h3,
+.shopify-policy__body h4,
+.shopify-policy__body h5,
+.shopify-policy__body h6,
+.shopify-policy__container h1,
+.shopify-policy__container h2,
+.shopify-policy__container h3,
+.shopify-policy__container h4,
+.shopify-policy__container h5,
+.shopify-policy__container h6 {
+  font-family: "Barlow", sans-serif !important;
+  font-weight: 400 !important;
+}
+
+/* Policy-sider: Match samme layout som page-sider (salgsbetingelser) */
+.shopify-policy__container {
+  max-width: 72.6rem !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+}
+
+@media screen and (min-width: 750px) {
+  .shopify-policy__container {
+    padding: 0 5rem !important;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .shopify-policy__container {
+    max-width: 72.6rem !important;
+    padding: 0 !important;
+  }
+}
+
+/* Policy body: Match samme styling som .rte på page-sider */
+.shopify-policy__body {
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+}
+
+/* Policy title: Match samme styling som .main-page-title */
+.shopify-policy__title {
+  font-family: "Barlow", sans-serif !important;
+  font-weight: 400 !important;
+  margin-bottom: 3rem !important;
+  text-align: left !important;
+}
+
+@media screen and (min-width: 750px) {
+  .shopify-policy__title {
+    margin-bottom: 4rem !important;
+  }
+}
+
+
+
+   /* ============================================================
+      3️⃣ SIDEMENY – HOVEDSTIL
+      ============================================================ */
+   
+   section.bf-sidebar {
+     background: transparent !important;
+     border: 0 !important;
+     padding: 0 !important;
+   }
+   
+   .bf-sidebar-box {
+     background: #fff;
+     border: 1px solid #E5E7EB;
+     border-radius: 8px;
+     padding: 10px;
+     position: relative;
+     z-index: 5;
+   }
+   
+   .bf-sidebar-box,
+   .bf-sidebar-box * {
+     font-family: "Barlow Condensed", sans-serif;
+     letter-spacing: .1px;
+     line-height: 1.2;
+     font-weight: 600;
+   }
+   
+   .bf-sidebar__heading {
+     font-size: 17px;
+     font-weight: 700;
+     color: #000;
+     margin: 4px 0;
+   }
+   
+   /* Skjul heading hvis den er tom og flytt elementene opp */
+   .bf-sidebar__heading:empty {
+     display: none;
+   }
+   
+   /* Juster margin på nav når heading er skjult */
+   .bf-sidebar-box:has(.bf-sidebar__heading:empty) .bf-sidebar__nav,
+   .bf-sidebar-box:not(:has(.bf-sidebar__heading)) .bf-sidebar__nav {
+     margin-top: 0;
+   }
+   
+   .bf-nav { list-style: none; margin: 0; padding: 0; }
+   .bf-nav__item { margin: 0; padding: 0; }
+   
+   .bf-nav a {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     padding: 6px 10px;
+     border-radius: 4px;
+     text-decoration: none;
+     color: #111;
+     font-size: 15px;
+   }
+   .bf-nav a:hover {
+     color: #7A0C71;
+     text-decoration: underline;
+     text-underline-offset: 2px;
+     text-decoration-color: #7A0C71;
+   }
+   .bf-nav li ul {
+     margin: 4px 0 0;
+     padding: 0 0 0 8px;
+     border-left: 2px solid #E5E7EB;
+     display: none;
+   }
+   .bf-nav li.is-open > ul { display: block; }
+   .bf-nav li ul a { padding: 2px 8px; font-size: 14px; }
+   .bf-nav a.is-active {
+     font-weight: 700;
+     color: #7A0C71;
+     text-decoration: underline;
+     text-decoration-color: #7A0C71;
+   }
+   
+   /* Mobil drawer */
+   .bf-sidebar__toggle {
+     display: inline-flex;
+     gap: 8px;
+     align-items: center;
+     border: 1px solid rgba(0,0,0,.12);
+     border-radius: 8px;
+     padding: 10px 12px;
+     background: #fff;
+     cursor: pointer;
+   }
+   /* Skjul meny-knappen i sidemenyen fra 992px og oppover siden vi har en i header */
+   @media (min-width:1199px){ .bf-sidebar__toggle{ display:none !important; } }
+   
+   .bf-drawer {
+     position: fixed;
+     inset: 0 0 0 auto;
+     width: min(90vw,360px);
+     background: #fff;
+     box-shadow: -24px 0 48px rgba(0,0,0,.2);
+     transform: translateX(100%);
+     transition: transform .25s ease;
+     z-index: 60;
+     padding: 16px;
+     overflow-y: auto;
+   }
+   .bf-drawer[aria-hidden="false"] { transform: translateX(0); }
+   .bf-drawer__close {
+     display: inline-flex;
+     align-items: center;
+     gap: 6px;
+     border: 1px solid rgba(0,0,0,.12);
+     border-radius: 8px;
+     padding: 8px 10px;
+     background: #fff;
+     cursor: pointer;
+     margin-bottom: 12px;
+   }
+   .bf-drawer__backdrop {
+     position: fixed;
+     inset: 0;
+     background: rgba(0,0,0,.4);
+     z-index: 59;
+     opacity: 0;
+     pointer-events: none;
+     transition: opacity .2s ease;
+   }
+   .bf-drawer__backdrop[data-open="true"] {
+     opacity: 1;
+     pointer-events: auto;
+   }
+   
+   @media (min-width:1199px){
+     .bf-sidebar__toggle{ display:none !important; }
+   }
+   
+   
+   /* ============================================================
+      4️⃣ PRODUKTKORT – JEvN HØYDE (ALA MENY)
+      ============================================================ */
+   
+ /* Grid-items og wrapper: Shopify-grid styrer bredde, kort fyller hele cellen */
+.product-grid .grid__item {
+  display: block;            /* la grid'en styre bredden */
+}
+
+.product-grid .grid__item .card-wrapper {
+  display: flex;             /* vi bruker flex inni kortet */
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+   
+   /* Selve kortet */
+   .product-grid .grid__item .card {
+     display: flex;
+     flex-direction: column;
+     height: 100%;
+     background: #fff;
+     border: 0;
+     border-radius: 14px;
+     padding: 12px;
+     box-shadow: 0 1px 0 rgba(0,0,0,.02);
+     gap: 6px;
+   }
+   
+   /* BILDEFELT */
+   .product-grid .card__media {
+     background: #fff;
+     border: none;
+     border-radius: 12px;
+     padding: 8px 8px 4px;
+   }
+   
+   .product-grid .card__media .media {
+     height: 190px;
+     min-height: 190px;
+     max-height: 190px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+   }
+   
+   .product-grid .card__media .media img,
+   .product-grid .card__media .media > picture img {
+     max-width: 100%;
+     max-height: 100%;
+     width: auto;
+     height: auto;
+     object-fit: contain;
+   }
+   
+   /* TEKST / INFO UNDER BILDET */
+   .card__content {
+     display: flex;
+     flex-direction: column;
+     flex-grow: 1;
+   }
+   
+   .card-information {
+     display: flex;
+     flex-direction: column;
+     flex-grow: 1;
+     gap: 4px;
+     padding-top: 0;
+   }
+   
+   /* Produktnavn – maks 2 linjer, fast høyde */
+   .card__heading {
+     margin: 0;
+     font-weight: 700;
+     line-height: 1.25;
+     display: -webkit-box;
+     -webkit-line-clamp: 2;
+     -webkit-box-orient: vertical;
+     overflow: hidden;
+     min-height: 2.6em;   /* ~2 linjer */
+   }
+   .card__heading a {
+     color: #111;
+     text-decoration: none;
+   }
+   .card__heading a:hover {
+     text-decoration: underline;
+     text-underline-offset: 2px;
+     text-decoration-color: #7A0C71;
+   }
+   
+   /* Pris rett under tittel (grunnlag, finjusteres i 12–14) */
+   .price {
+     margin-top: 2px;
+   }
+  .price__sale .price-item--sale {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--hh-color-saleprice) !important;
+  }
+   .price__sale .price-item--regular {
+     color: #6B7280 !important;
+     text-decoration: line-through;
+     opacity: .8;
+     font-size: 14px;
+     font-weight: 600;
+   }
+   
+   /* Badge (tilbud) - condensed font og align med kjøpsknappen */
+   /* Kortet har padding: 12px, så kjøpsknappen er 12px fra høyre kant */
+   /* Badgen skal også være 12px fra høyre kant for å aligne */
+   /* card__inner har position: relative, så badgen plasseres relativt til den */
+   .product-grid .card .card__inner {
+     position: relative;  /* Sørg for at badge kan plasseres relativt til card__inner */
+   }
+   
+   /* Overstyr card__badge container - plasser relativt til card__inner */
+   /* Må overstyre display: none regler for standard-kort og grid-plassering */
+   /* Bare vis badgen i card__content utenfor card__inner */
+   .product-grid .card > .card__content .card__badge,
+   .product-grid .card--standard > .card__content .card__badge,
+   .product-grid .card--card > .card__content .card__badge {
+     display: block !important;  /* Overstyr display: none */
+     position: absolute !important;
+     top: 10px !important;
+     right: 12px !important;  /* Align med kjøpsknappen (12px fra høyre kant) */
+     left: auto !important;
+     bottom: auto !important;
+     margin: 0 !important;
+     align-self: auto !important;
+     justify-self: auto !important;
+     grid-row-start: auto !important;
+     grid-column-start: auto !important;
+     grid-row-end: auto !important;
+     grid-column-end: auto !important;
+     z-index: 10;
+   }
+   
+   /* Skjul alle badges som ikke er i card__content (utenfor card__inner) */
+   /* Det er to card__content elementer - en inne i card__inner og en utenfor */
+   /* Vi vil bare ha badgen i card__content utenfor card__inner */
+   .product-grid .card .card__inner > .card__badge,
+   .product-grid .card--standard .card__inner > .card__badge,
+   .product-grid .card--card .card__inner > .card__badge,
+   .product-grid .card--media .card__inner > .card__badge {
+     display: none !important;
+   }
+   
+   /* Skjul også badges som er i card__content inne i card__inner */
+   .product-grid .card .card__inner .card__content .card__badge {
+     display: none !important;
+   }
+   
+   /* Skjul også badges som er i card__media hvis de finnes */
+   .product-grid .card .card__media .card__badge {
+     display: none !important;
+   }
+   
+   /* Badge-elementet med condensed font */
+   /* Bare stil badgen i card__content utenfor card__inner */
+   .product-grid .card > .card__content .badge {
+     position: relative !important;  /* Relativt til card__badge container */
+     top: auto !important;
+     right: auto !important;
+     left: auto !important;
+     bottom: auto !important;
+     background: var(--hh-color-badge) !important;
+     color: #fff !important;
+     border-radius: 8px;
+     padding: 7px 10px;
+     font-weight: 700;
+     font-size: 12px;
+     font-family: "Barlow Condensed", sans-serif !important;  /* Condensed font */
+     text-transform: uppercase;
+     z-index: 2;
+   }
+   
+   /* Bunnlinje nederst (pris + quick-add) */
+   .product-card-bottom {
+     margin-top: auto;
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+   }
+   
+   
+   /* ============================================================
+      5️⃣ QUICK ADD – FUNGERENDE UI + REN BULK
+      ============================================================ */
+   
+   /* Kjøp-knappen (rød vogn) */
+   .bf-qa-cartbtn {
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     width: 44px;
+     height: 44px;
+     border-radius: 10px;
+     border: 0;
+     background: var(--hh-color-cartbtn);
+     color: #fff;
+     cursor: pointer;
+   }
+   .bf-qa-cartbtn:hover { filter: brightness(.92); }
+   
+   /* Søppelbøtte-knapp – brukes når qty = 1 */
+.bf-trashbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: transparent;
+  border: none;
+  color: var(--hh-color-trash); /* Husholdningen-rød / eller sort */
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
+
+.bf-trashbtn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+}
+
+.bf-trashbtn:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+   
+   /* STATE styres av JS (data-bf-state, data-bf-qty-one) */
+   
+   /* Skjul qty som standard inne i kortet */
+   .product-grid .card .quick-add__quantity,
+   .product-grid .card .product-form__quantity,
+   .product-grid .card quantity-input,
+   .product-grid .card .quantity,
+   .product-grid .card .cart-quantity {
+     display: none;
+   }
+   
+   /* Vis qty når state = "qty" */
+   .product-grid .card[data-bf-state="qty"] .quick-add__quantity,
+   .product-grid .card[data-bf-state="qty"] .product-form__quantity,
+   .product-grid .card[data-bf-state="qty"] quantity-input,
+   .product-grid .card[data-bf-state="qty"] .quantity,
+   .product-grid .card[data-bf-state="qty"] .cart-quantity {
+     display: inline-flex;
+   }
+   
+   /* Vis rød Kjøp-knapp når state = "cart" */
+   .product-grid .card[data-bf-state="cart"] .bf-qa-cartbtn { display: inline-flex; }
+   .product-grid .card[data-bf-state="qty"]  .bf-qa-cartbtn { display: none; }
+   
+   /* qty = 1 → vis søppelbøtte, skjul minus */
+   .product-grid .card[data-bf-qty-one="1"] .quantity__button[name="minus"] { display: none; }
+   .product-grid .card[data-bf-qty-one="1"] .bf-trashbtn { display: inline-flex; }
+   
+   /* Default: minus synlig når vi ikke er på qty=1 */
+   .product-grid .card .quantity__button[name="minus"] { display: inline-flex; }
+   
+   /* REN BULK / QTY UTEN GRÅ RAMME (globalt i MainContent) */
+   #MainContent quantity-input,
+   #MainContent quantity-input *,
+   #MainContent .quick-add__quantity,
+   #MainContent .quick-add__quantity *,
+   #MainContent .product-form__quantity,
+   #MainContent .product-form__quantity *,
+   #MainContent .cart-quantity,
+   #MainContent .cart-quantity *,
+   #MainContent .quantity,
+   #MainContent .quantity *,
+   #MainContent .quantity-selector,
+   #MainContent .quantity-selector * {
+     background-color: transparent !important;
+     border: 0 !important;
+     box-shadow: none !important;
+     outline: 0 !important;
+   }
+   
+   /* Sørg for at ikon-knappene ikke har egen bakplate */
+   #MainContent .quantity__button,
+   #MainContent .quantity__button *,
+   #MainContent .quantity__input {
+     background-color: transparent !important;
+     border: 0 !important;
+     box-shadow: none !important;
+     outline: 0 !important;
+   }
+   
+   /* Skjul progress-bar i produktkort (den grå stripen bak qty) */
+   .product-grid .card .progress-bar-container,
+   .product-grid .card .progress-bar,
+   .product-grid .card .progress-bar-value {
+     display: none !important;
+   }
+   
+   /* Hold alt på én linje og sentrert */
+   .product-grid .card .cart-quantity,
+   .product-grid .card .quantity,
+   .product-grid .card quantity-input {
+     align-items: center !important;
+     justify-content: center !important;
+     gap: 6px !important;
+   }
+   
+   /* Samme størrelse på alle ikon-knapper */
+   .product-grid .card .quantity__button,
+   .product-grid .card .bf-trashbtn {
+     width: 34px !important;
+     height: 34px !important;
+     margin: 0 !important;
+     padding: 0 !important;
+   }
+   
+   /* Antall-feltet på linje med ikonene */
+   .product-grid .card .quantity__input {
+     height: 34px !important;
+     line-height: 34px !important;
+     vertical-align: middle !important;
+   }
+   
+   
+   /* ============================================================
+      6️⃣ SIDEMENY – PRESIS FINJUSTERING AV HVIT BOKS
+      ============================================================ */
+   
+   @media (min-width: 992px) {
+     .bf-sidebar-box {
+       position: relative;
+       left: -1px; /* flytt sidemenyen mot venstre – juster etter behov */
+     }
+   }
+   
+   
+   /* ============================================================
+      7️⃣ SLETT RAMMA PÅ CART-QUANTITY (BOKSEN RUNDT BULK)
+      ============================================================ */
+   
+   .product-grid .card quantity-input.cart-quantity,
+   .product-grid .card quantity-input.cart-quantity::before,
+   .product-grid .card quantity-input.cart-quantity::after,
+   .product-grid .card .quantity.cart-quantity,
+   .product-grid .card .quantity.cart-quantity::before,
+   .product-grid .card .quantity.cart-quantity::after {
+     background: transparent !important;
+     border: 0 !important;
+     box-shadow: none !important;
+     outline: 0 !important;
+     border-radius: 0 !important;
+     padding: 0 !important;
+   }
+   
+   
+   /* ============================================================
+      8️⃣ KJØPSKNAPP / BULK TIL HØYRE I KORTET
+      ============================================================ */
+   
+   /* Flytt hele quick-add-bulk til høyre */
+   .product-grid .card .quick-add-bulk {
+     align-self: flex-end !important;
+   }
+   
+   
+   /* ============================================================
+      9️⃣ PRODUKTNAVN OPPTIL 2 LINJER + LIK HØYDE
+      ============================================================ */
+   
+   #MainContent .product-grid .card {
+     display: flex !important;
+     flex-direction: column !important;
+     justify-content: flex-start !important;
+     align-items: stretch !important;
+     height: 100% !important;
+   }
+   
+   /* Containeren under bildet (tekst + pris + knapp) */
+   #MainContent .product-grid .card .card-information {
+     display: flex !important;
+     flex-direction: column !important;
+     flex-grow: 1 !important;
+     gap: 4px !important;
+     justify-content: flex-start !important;
+   }
+   
+   /* Produktnavn – maks 2 linjer, fast høyde, litt større font */
+   #MainContent .product-grid .card .card__heading {
+     margin: 4px 0 0 0 !important;
+     font-size: 17px !important;
+     font-weight: 700 !important;
+     line-height: 1.3 !important;
+     display: -webkit-box !important;
+     -webkit-line-clamp: 2 !important;
+     -webkit-box-orient: vertical !important;
+     overflow: hidden !important;
+     min-height: calc(1.3em * 2) !important;
+   }
+   
+   /* Pris litt tettere under tittel (basis) */
+   #MainContent .product-grid .card .price {
+     margin-top: 2px !important;
+     padding-top: 0 !important;
+   }
+   
+   
+   /* ============================================================
+      🔟 SIDEMENY – JUSTERT INN I LAYOUTEN
+      ============================================================ */
+   
+   @media (min-width: 992px) {
+     .content-for-layout section.bf-sidebar {
+       padding-left: 35px !important;   /* juster 30–40px etter smak */
+       padding-right: 0 !important;
+     }
+   }
+   
+   
+   /* ============================================================
+      1️⃣1️⃣ KJØPSKNAPP/BULK – HØYREJUSTERING (FINJUSTERING)
+      ============================================================ */
+   
+   /* Sørg for at innhold i kortet ligger i kolonner */
+   .product-grid .card .card__content {
+     display: flex !important;
+     flex-direction: column !important;
+   }
+   
+   /* Flytt hele quick-add-bulk (Kjøp / bulk) tydelig til høyre */
+   .product-grid .card .quick-add-bulk {
+     margin-left: auto !important;
+     margin-right: 0 !important;
+     align-self: flex-end !important;
+   }
+   
+   
+   /* ============================================================
+      1️⃣2️⃣ STOR OG TYDELIG PRIS UTEN TILBUD
+      ============================================================ */
+   
+   /* Når produktet ikke er på tilbud (ingen price--on-sale) */
+   .product-grid .card .price:not(.price--on-sale) .price__regular .price-item--regular {
+     font-size: 24px !important;
+     font-weight: 400 !important;
+   }
+   
+   /* Litt tight spacing */
+   .product-grid .card .price:not(.price--on-sale) {
+     margin-top: 4px !important;
+     line-height: 1.2 !important;
+   }
+   
+   
+   /* ============================================================
+      1️⃣3️⃣ SAMME HØYDE PÅ PRIS-FELTET
+      ============================================================ */
+   
+   .product-grid .card .price {
+     min-height: 42px;
+     display: flex;
+     flex-direction: column;
+     justify-content: flex-end;
+     margin-top: 2px;
+   }
+   
+   
+   /* ============================================================
+      1️⃣4️⃣ KOMPAKT FØRPRIS + TILBUDSPRIS
+      ============================================================ */
+   
+   /* Tving prisblokka i produktkort til å være helt tett */
+   .product-grid .card .price {
+     display: flex !important;
+     flex-direction: column !important;
+     gap: 0 !important;
+     row-gap: 0 !important;
+     line-height: 1.1 !important;
+     margin: 0 !important;
+   }
+   
+   /* Fjern margin i under-containere */
+   .product-grid .card .price__regular,
+   .product-grid .card .price__sale {
+     margin: 0 !important;
+   }
+   
+   /* Selve pris-linjene uten ekstra luft */
+   .product-grid .card .price-item {
+     margin: 0 !important;
+     line-height: 1.1 !important;
+   }
+   
+   /* Førpris og tilbudspris tett sammen */
+   .product-grid .card .price-item--regular {
+     margin-bottom: 0 !important;
+   }
+   .product-grid .card .price-item--sale {
+     margin-top: 0 !important;
+   }
+  /* ============================================================
+   1️⃣5️⃣ HUSHOLDNINGEN – VANLIG PRIS = TILBUDSPRIS
+   ============================================================ */
+
+/* Vanlig pris (ikke på tilbud) skal være lik som tilbudspris */
+.product-grid .card .price:not(.price--on-sale) .price__regular .price-item--regular {
+  font-family: "Barlow Condensed", sans-serif !important;  /* Condensed for pris */
+  font-size: 24px !important;      /* lik tilbudspris */
+  font-weight: 600 !important;     /* semibold - et hakk tynnere */
+  line-height: 1.2 !important;
+  color: var(--hh-color-price) !important;
+}
+
+/* Tilbudspris (nåpris) – behold slik */
+.product-grid .card .price__sale .price-item--sale {
+  font-family: "Barlow Condensed", sans-serif !important;  /* Condensed for pris */
+  font-size: 24px !important;
+  font-weight: 600 !important;  /* semibold - et hakk tynnere */
+  line-height: 1.2 !important;
+  color: var(--hh-color-saleprice) !important;
+}
+
+/* Førpris – behold som den er */
+.product-grid .card .price__sale .price-item--regular {
+  font-family: "Barlow Condensed", sans-serif !important;  /* Condensed for pris */
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: #6B7280 !important;
+  text-decoration: line-through;
+  opacity: 0.9;
+  margin-bottom: 1px !important;
+}
+
+/* ============================================================
+   1️⃣6️⃣ HUSHOLDNINGEN – LIKE BREDE KORT I ALLE 5-KOLONNE GRIDS
+   ============================================================ */
+
+   @media (min-width: 990px) {
+    /* Gjør alle 5-col produktgrids om til ekte CSS-grid med 5 like kolonner */
+    .grid.product-grid.grid--5-col-desktop {
+      display: grid !important;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      column-gap: 12px;
+      row-gap: 10px !important;  /* tvang, tydelig luft mellom radene */
+    }
+  
+    /* Hvert item fyller sin kolonne 100% */
+    .grid.product-grid.grid--5-col-desktop > .grid__item {
+      width: 100% !important;
+      max-width: none !important;
+      flex: 0 0 auto !important; /* nøytraliser flex-regler fra slideren */
+    }
+  }
+  /* ============================================================
+   1️⃣7️⃣ HUSHOLDNINGEN – JUSTER BANNER OPP VED SIDEBAR
+   ============================================================ */
+
+@media (min-width: 992px) {
+  /* Første seksjon til høyre for sidemenyen (banneret) skal starte helt oppe */
+  .content-for-layout > .shopify-section:not(.bf-sidebar):first-of-type {
+    margin-top: 0 !important;
+  }
+
+  /* Og ta vekk eventuell ekstra padding i toppen inni banner-seksjonen */
+  .content-for-layout > .shopify-section:not(.bf-sidebar):first-of-type > .page-width {
+    padding-top: 0 !important;
+  }
+}
+
+/* ============================================================
+   2️⃣0️⃣ HUSHOLDNINGEN – ALIGN PRODUKTKORT MED BANNERKARUSELL
+   ============================================================ */
+
+@media (min-width: 992px) {
+  /* Gjør produktkortene like brede som bannerkarusellen */
+  /* Fjern max-width-begrensning på page-width for produktkortene */
+  .hh-layout__main .collection slider-component.page-width,
+  .hh-layout__main .collection .slider-component.page-width {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  /* Sørg for at produktgridene fyller hele bredden */
+  .hh-layout__main .collection .product-grid {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* Fjern padding på collection-containeren også */
+  .hh-layout__main .collection--full-width slider-component.page-width {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  /* Fjern padding på collection-sidene (kategorisider) for samme margin som forsiden */
+  .collection.page-width {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  /* Sørg for at produktgridene på kategorisider fyller hele bredden */
+  .collection.page-width .product-grid {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* Samme column-gap som forsiden (12px) for å få 5 produkter i bredden */
+  .collection.page-width .product-grid.grid--5-col-desktop,
+  .collection .product-grid.grid--5-col-desktop {
+    column-gap: 12px !important;
+  }
+  
+  /* Fjern padding på related-products (relaterte produkter på produktsiden) for samme margin som forsiden */
+  .related-products.page-width {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  /* Sørg for at produktgridene på related-products fyller hele bredden */
+  .related-products.page-width .product-grid {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* Samme column-gap som forsiden (12px) for related-products */
+  .related-products.page-width .product-grid.grid--5-col-desktop,
+  .related-products .product-grid.grid--5-col-desktop {
+    column-gap: 12px !important;
+  }
+}
+
+/* ============================================================
+   2️⃣2️⃣ HUSHOLDNINGEN – ALIGN OG SEMIBOLD PRODUKTKATEGORIER
+   ============================================================ */
+
+@media (min-width: 992px) {
+  /* Align produktkategoriene med resten av innholdet */
+  .hh-layout__main .collection__title.title-wrapper.page-width {
+    max-width: 100% !important;
+    padding-left: 10px !important;  /* Flytt 10px inn til høyre */
+    padding-right: 0 !important;
+  }
+  
+  /* Gjør produktkategoriene normal Barlow, regular og svart */
+  .hh-layout__main .collection__title .title {
+    font-weight: 400 !important;  /* Regular */
+    font-family: "Barlow", sans-serif !important;  /* Normal Barlow */
+    color: #111 !important;  /* Svart */
+    font-size: calc(var(--font-heading-scale) * 2rem - 2px) !important;  /* 2px mindre */
+  }
+  
+  @media screen and (min-width: 750px) {
+    .hh-layout__main .collection__title .title {
+      font-size: calc(var(--font-heading-scale) * 2.4rem - 2px) !important;  /* 2px mindre på desktop */
+    }
+  }
+  
+  /* Samme heading-plassering på kategorisider som forsiden */
+  .collection.page-width .collection__title.title-wrapper,
+  .collection .collection__title.title-wrapper.page-width {
+    max-width: 100% !important;
+    padding-left: 10px !important;  /* Samme som forsiden */
+    padding-right: 0 !important;
+  }
+  
+  /* Samme heading-plassering på collection-hero (banner på kategorisider) som forsiden */
+  .collection-hero.page-width .collection-hero__inner,
+  .collection-hero .collection-hero__inner.page-width {
+    padding-left: 10px !important;  /* Samme som forsiden */
+    padding-right: 0 !important;
+  }
+  
+  /* Samme heading-plassering på related-products (produktsider) som forsiden */
+  .related-products.page-width .related-products__heading,
+  .related-products .related-products__heading {
+    padding-left: 10px !important;  /* Samme som forsiden */
+    padding-right: 0 !important;
+  }
+  
+  /* Samme plassering på filter-elementer (Filter, Tilgjengelig, Price, Sorter etter) som headingene */
+  .facets-wrapper.page-width,
+  .facets-vertical.page-width,
+  .facets-vertical-sort.page-width,
+  .facets.page-width {
+    padding-left: 10px !important;  /* Samme som forsiden */
+    padding-right: 30px !important;  /* Juster inn til venstre med 30px */
+  }
+  
+  /* Samme plassering på produktantall (6 produkter) som headingene */
+  .product-count-vertical.page-width,
+  .product-count-vertical {
+    padding-left: 10px !important;  /* Samme som forsiden */
+    padding-right: 30px !important;  /* Juster inn til venstre med 30px */
+  }
+}
+
+/* ============================================================
+   2️⃣1️⃣ HUSHOLDNINGEN – ALIGN HEADER MED SIDEMENY
+   ============================================================ */
+
+@media (min-width: 992px) {
+  /* Align header med sidemenyen (ikke banneret) */
+  /* Header skal være full bredde, men padding skal aligne med sidemenyen */
+  .header.page-width {
+    max-width: 100% !important;
+    padding-left: calc((100vw - var(--page-width)) / 2) !important;
+    padding-right: calc((100vw - var(--page-width)) / 2) !important;
+  }
+}
+/* ============================================================
+   1️⃣8️⃣ HUSHOLDNINGEN – RYDD OPP I FØRPRIS / TILBUDSPRIS
+   ============================================================ */
+
+/* 1) Når produktet er på salg:
+      Skjul den ekstra "vanlig pris"-blokka (den svarte) */
+#MainContent .price.price--on-sale .price__regular {
+  display: none !important;
+}
+
+/* 2) Salgsblokka skal alltid være vertikal:
+      Førpris (grå <s>) over, tilbudspris under */
+#MainContent .price.price--on-sale .price__sale {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 0 !important;
+}
+
+/* 3) Hver pris-linje i sale-blokka på egen linje */
+#MainContent .price.price--on-sale .price__sale span {
+  display: block !important;
+}
+
+/* 4) Reset strek – ingen strek på selve prisene som standard */
+#MainContent .price.price--on-sale .price-item {
+  text-decoration: none !important;
+}
+
+/* 5) KUN <s> (førpris) skal ha strek */
+#MainContent .price.price--on-sale s.price-item--regular {
+  text-decoration: line-through !important;
+}
+/* ============================================================
+   1️⃣9️⃣ RESPONSIVE PRODUKTGRID – iPad & mellomstørrelser
+   ============================================================ */
+
+@media (min-width: 750px) and (max-width: 989px) {
+
+  /* 5 produkter i bredden med jevn luft mellom kortene */
+  .collection .product-grid,
+  .collection .grid.product-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    column-gap: 16px;   /* horisontal luft mellom kort */
+    row-gap: 20px;      /* vertikal luft mellom rader */
+    padding-inline: 10px; /* litt luft mot kantene */
+  }
+
+  /* hvert kort fyller grid-cellen uten egen padding */
+  .collection .product-grid .grid__item,
+  .collection .grid.product-grid .grid__item {
+    max-width: 100% !important;
+    width: auto !important;
+    flex: 0 0 auto !important;
+    padding: 0 !important;
+  }
+
+  /* Stram inn luft inni selve kortene */
+  .card--product .card__content {
+    padding-top: 6px;
+    padding-bottom: 8px;
+  }
+
+  .card--product .card__information {
+    row-gap: 2px;
+  }
+
+  .card--product .card__heading {
+    margin-top: 4px;
+    margin-bottom: 2px;
+  }
+}
+/* ============================================================
+   1️⃣9️⃣ RESPONSIVE PRODUKTGRID – mellomstore skjermer og mobil
+   ============================================================ */
+
+/* 💻 900–1199 px → 5 kolonner */
+@media (min-width: 900px) and (max-width: 1199px) {
+  .collection .product-grid,
+  .collection .grid.product-grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    column-gap: 16px;
+    row-gap: 20px;
+    padding-inline: 10px;
+  }
+
+  .collection .product-grid .grid__item,
+  .collection .grid.product-grid .grid__item {
+    max-width: 100% !important;
+    width: auto !important;
+    flex: 0 0 auto !important;
+    padding: 0 !important;
+  }
+}
+
+/* 💻 750–899 px → 4 kolonner */
+@media (min-width: 750px) and (max-width: 899px) {
+  .collection .product-grid,
+  .collection .grid.product-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 16px;
+    row-gap: 18px;
+    padding-inline: 10px;
+  }
+
+  .collection .product-grid .grid__item,
+  .collection .grid.product-grid .grid__item {
+    max-width: 100% !important;
+    width: auto !important;
+    flex: 0 0 auto !important;
+    padding: 0 !important;
+  }
+}
+
+/* 📱 600–749 px → 3 kolonner */
+@media (min-width: 600px) and (max-width: 749px) {
+  .collection .product-grid,
+  .collection .grid.product-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 14px;
+    row-gap: 16px;
+    padding-inline: 8px;
+  }
+
+  .collection .product-grid .grid__item,
+  .collection .grid.product-grid .grid__item {
+    max-width: 100% !important;
+    width: auto !important;
+    flex: 0 0 auto !important;
+    padding: 0 !important;
+  }
+}
+
+/* 📱 under 600 px → 2 kolonner */
+@media (max-width: 599px) {
+  .collection .product-grid,
+  .collection .grid.product-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 12px;
+    row-gap: 14px;
+    padding-inline: 8px;
+  }
+
+  .collection .product-grid .grid__item,
+  .collection .grid.product-grid .grid__item {
+    max-width: 100% !important;
+    width: auto !important;
+    flex: 0 0 auto !important;
+    padding: 0 !important;
+  }
+}

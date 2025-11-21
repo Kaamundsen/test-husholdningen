@@ -1,0 +1,129 @@
+{% comment %}
+  Sidebar Navigation (OS 2.0) – REN VERSJON
+  • Velg Shopify-meny i innstillinger
+  • Sticky på desktop (valgfritt)
+  • Mobil: off-canvas drawer
+  • Ingen layout-hacks her – layout styres i assets/custom-layout.css
+{% endcomment %}
+
+{% assign nav = menus[ section.settings.menu ] %}
+
+{% if section.settings.hide_header_menu %}
+  <style>
+    .header__inline-menu{display:none!important}
+    header-drawer,.menu-drawer-container,.menu-drawer,.header__icon--menu{display:none!important}
+  </style>
+{% endif %}
+
+<div class="bf-sidebar-box" id="bf-sidebar-{{ section.id }}" style="--sidebar-width:{{ section.settings.sidebar_width }}px; --sidebar-sticky-offset:{{ section.settings.sticky_offset }}px;">
+  {% if section.settings.title != blank %}
+    <div class="bf-sidebar__heading">{{ section.settings.title }}</div>
+  {% endif %}
+
+  <!-- Desktop-nav -->
+  <nav class="bf-sidebar__nav" aria-label="{{ section.settings.title | default: 'Sidemeny' }}">
+    <ul class="bf-nav">
+      {% assign current_url = request.path | append: request.query %}
+      {% if nav and nav.links.size > 0 %}
+        {% for link in nav.links %}
+          {% render 'bf-side-nav-item',
+            link: link,
+            current_url: current_url,
+            level: 1,
+            expand_first: section.settings.expand_first_level,
+            show_levels: section.settings.show_levels
+          %}
+        {% endfor %}
+      {% else %}
+        <li class="bf-nav__item"><span style="opacity:.7">Ingen lenker i valgt meny.</span></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <!-- Mobil-drawer -->
+  <div class="bf-drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="{{ section.settings.title | default: 'Sidemeny' }}">
+    <button class="bf-drawer__close" type="button" data-close-drawer>✕ Lukk</button>
+    <ul class="bf-nav">
+      {% assign current_url = request.path | append: request.query %}
+      {% if nav and nav.links.size > 0 %}
+        {% for link in nav.links %}
+          {% render 'bf-side-nav-item',
+            link: link,
+            current_url: current_url,
+            level: 1,
+            expand_first: true,
+            show_levels: section.settings.show_levels
+          %}
+        {% endfor %}
+      {% else %}
+        <li class="bf-nav__item"><span style="opacity:.7">Ingen lenker i valgt meny.</span></li>
+      {% endif %}
+    </ul>
+  </div>
+  <div class="bf-drawer__backdrop" data-backdrop></div>
+</div>
+
+<script>
+  (function(){
+    function initSidebar() {
+      const root = document.getElementById('bf-sidebar-{{ section.id }}');
+      if(!root) return;
+      const drawer = root.querySelector('.bf-drawer');
+      const backdrop = root.querySelector('[data-backdrop]');
+      const closeBtn = root.querySelector('.bf-drawer__close');
+
+      if(!drawer || !backdrop) return;
+
+      function openDrawer(){ 
+        drawer.setAttribute('aria-hidden','false'); 
+        backdrop.setAttribute('data-open','true'); 
+      }
+      function closeDrawer(){ 
+        drawer.setAttribute('aria-hidden','true');  
+        backdrop.setAttribute('data-open','false'); 
+      }
+
+      closeBtn?.addEventListener('click', closeDrawer);
+      backdrop.addEventListener('click', closeDrawer);
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDrawer(); });
+      
+      // Header meny-knapp - bruk event delegation som fungerer på mobil
+      document.addEventListener('click', function(e) {
+        const target = e.target.closest('[data-open-sidebar-drawer]');
+        if(target) {
+          e.preventDefault();
+          e.stopPropagation();
+          openDrawer();
+        }
+      }, true); // Bruk capture phase for å fange klikket tidligere
+    }
+    
+    // Kjør når DOM er klar
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initSidebar);
+    } else {
+      // Kjør med liten delay for å sikre at alle elementer er lastet
+      setTimeout(initSidebar, 100);
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Sidebar navigation",
+  "tag": "section",
+  "class": "section bf-sidebar",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Tittel", "default": "Kategorier" },
+    { "type": "link_list", "id": "menu", "label": "Velg meny", "default": "main-menu" },
+    { "type": "range", "id": "sidebar_width", "label": "Bredde (desktop)", "min": 200, "max": 360, "step": 10, "default": 280 },
+    { "type": "checkbox", "id": "sticky", "label": "Sticky på desktop", "default": true },
+    { "type": "range", "id": "sticky_offset", "label": "Sticky offset (px)", "min": 0, "max": 200, "step": 2, "default": 76 },
+    { "type": "range", "id": "show_levels", "label": "Vis antall nivåer", "min": 1, "max": 3, "step": 1, "default": 3 },
+    { "type": "checkbox", "id": "expand_first_level", "label": "Åpne første nivå som standard (desktop)", "default": true },
+    { "type": "text", "id": "mobile_label", "label": "Mobilknapp-tekst", "default": "Meny" },
+    { "type": "checkbox", "id": "hide_header_menu", "label": "Skjul hovedmeny i header på denne siden", "default": true }
+  ],
+  "presets": [{ "name": "Sidebar navigation" }]
+}
+{% endschema %}

@@ -1,0 +1,60 @@
+{%- comment -%}
+  Produktkort – Husholdningen
+  - Viser tilbudsbadge hvis compare_at > price
+  - Viser størrelse fra metafield `custom.size` eller variant-vekt, ellers variant-title
+  - Handleknapp som blir til +/- mengdekontroll
+{%- endcomment -%}
+
+{%- assign v = product.selected_or_first_available_variant -%}
+{%- assign on_sale = v.compare_at_price > v.price -%}
+
+<div class="bf-card" data-product-id="{{ product.id }}" data-variant-id="{{ v.id }}">
+  {% if on_sale %}
+    <span class="bf-card__badge">TILBUD</span>
+  {% endif %}
+
+  <a class="bf-card__media" href="{{ product.url }}">
+    {%- if product.featured_image -%}
+      {{ product.featured_image | image_url: width: 700 | image_tag:
+         loading: 'lazy', sizes: '(min-width: 992px) 280px, 50vw', class: 'bf-card__img' }}
+    {%- else -%}
+      <div class="bf-card__img bf-card__img--placeholder"></div>
+    {%- endif -%}
+  </a>
+
+  <div class="bf-card__body">
+    <h3 class="bf-card__title"><a href="{{ product.url }}">{{ product.title }}</a></h3>
+
+    <div class="bf-card__sub">
+      {%- if product.metafields.custom.size != blank -%}
+        {{ product.metafields.custom.size }}
+      {%- elsif v.weight and v.weight > 0 -%}
+        {{ v.weight | weight_with_unit }}
+      {%- elsif v.title != 'Default Title' -%}
+        {{ v.title }}
+      {%- endif -%}
+    </div>
+
+    <div class="bf-card__price">
+      {% if on_sale %}
+        <div class="bf-card__price-now bf-price--sale">{{ v.price | money }}</div>
+        <div class="bf-card__price-was">før <s>{{ v.compare_at_price | money }}</s></div>
+      {% else %}
+        <div class="bf-card__price-now">{{ v.price | money }}</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="bf-card__cta" data-qty-ui>
+    <button class="bf-add" type="button" data-add aria-label="Legg i handlekurv">
+      <!-- liten handlevogn -->
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zM7.16 14h9.53c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 21.16 5H6.21L5.27 3H2v2h2l3.6 7.59-1.35 2.44A2 2 0 0 0 8 18h11v-2H8.42l1-2z"/></svg>
+    </button>
+
+    <div class="bf-qty" hidden>
+      <button class="bf-qty__btn" type="button" data-minus aria-label="Fjern">−</button>
+      <input class="bf-qty__input" type="number" value="1" min="0" inputmode="numeric" aria-label="Antall">
+      <button class="bf-qty__btn" type="button" data-plus aria-label="Legg til">+</button>
+    </div>
+  </div>
+</div>
