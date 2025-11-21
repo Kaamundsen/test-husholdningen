@@ -27,29 +27,39 @@ git commit -m "$COMMIT_MSG" || echo "⚠️  Ingen endringer å committe"
 
 # 4. Push til GitHub
 echo -e "${BLUE}📤 Pusher til GitHub...${NC}"
-# Sett working directory eksplisitt og unngå problemer med refspecs
+# Sett working directory eksplisitt
 cd "$(dirname "$0")" || exit 1
-# Bruk eksplisitt push og filtrer bort dev-cursor feil
+# Push og fang både stdout og stderr, men ignorer dev-cursor feil
 PUSH_OUTPUT=$(git push origin main 2>&1)
 PUSH_EXIT=$?
-# Sjekk om push faktisk var vellykket (exit code 0) eller om det bare er dev-cursor feil
-if [ $PUSH_EXIT -eq 0 ]; then
+# Sjekk om push faktisk var vellykket ved å se etter "main -> main" i outputen
+if echo "$PUSH_OUTPUT" | grep -q "main -> main"; then
+    echo -e "${GREEN}✅ Pushet til GitHub${NC}"
+    echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
+elif [ $PUSH_EXIT -eq 0 ]; then
+    # Exit code 0 betyr suksess, selv om vi ikke ser "main -> main"
     echo -e "${GREEN}✅ Pushet til GitHub${NC}"
     echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
 elif echo "$PUSH_OUTPUT" | grep -q "dev-cursor"; then
-    # Sjekk om main faktisk ble pushet til tross for dev-cursor feil
-    if echo "$PUSH_OUTPUT" | grep -q "main -> main"; then
-        echo -e "${GREEN}✅ Pushet til GitHub (dev-cursor feil ignorert)${NC}"
-        echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
-    else
-        # Prøv en gang til med ren push
+    # Hvis det bare er dev-cursor feil, sjekk om vi faktisk er ahead
+    if git status | grep -q "ahead"; then
+        # Prøv en gang til - noen ganger fungerer det på andre forsøk
         if git push origin main 2>&1 | grep -q "main -> main"; then
             echo -e "${GREEN}✅ Pushet til GitHub${NC}"
             echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
         else
-            echo -e "${YELLOW}⚠️  Git push feilet${NC}"
-            exit 1
+            echo -e "${YELLOW}⚠️  Dev-cursor feil, men sjekker status...${NC}"
+            # Sjekk om vi fortsatt er ahead - hvis ikke, ble det pushet
+            if ! git status | grep -q "ahead"; then
+                echo -e "${GREEN}✅ Pushet til GitHub (dev-cursor feil ignorert)${NC}"
+                echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
+            else
+                echo -e "${YELLOW}⚠️  Push feilet${NC}"
+                exit 1
+            fi
         fi
+    else
+        echo -e "${GREEN}✅ Allerede oppdatert${NC}"
     fi
 else
     echo -e "${YELLOW}⚠️  Git push feilet: $PUSH_OUTPUT${NC}"
@@ -57,4 +67,5 @@ else
 fi
 
 echo -e "${GREEN}✅ gpdev fullført!${NC}"
+
 
