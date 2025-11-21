@@ -29,17 +29,28 @@ git commit -m "$COMMIT_MSG" || echo "⚠️  Ingen endringer å committe"
 echo -e "${BLUE}📤 Pusher til GitHub...${NC}"
 # Sett working directory eksplisitt og unngå problemer med refspecs
 cd "$(dirname "$0")" || exit 1
-# Bruk eksplisitt push uten å prøve å pushe andre branches
+# Bruk eksplisitt push og filtrer bort dev-cursor feil
 PUSH_OUTPUT=$(git push origin main 2>&1)
 PUSH_EXIT=$?
+# Sjekk om push faktisk var vellykket (exit code 0) eller om det bare er dev-cursor feil
 if [ $PUSH_EXIT -eq 0 ]; then
     echo -e "${GREEN}✅ Pushet til GitHub${NC}"
     echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
 elif echo "$PUSH_OUTPUT" | grep -q "dev-cursor"; then
-    # Ignorer dev-cursor feil - det er en git config issue som ikke påvirker push
-    echo -e "${YELLOW}⚠️  Dev-cursor feil ignorert${NC}"
-    echo -e "${GREEN}✅ Push til main fullført${NC}"
-    echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
+    # Sjekk om main faktisk ble pushet til tross for dev-cursor feil
+    if echo "$PUSH_OUTPUT" | grep -q "main -> main"; then
+        echo -e "${GREEN}✅ Pushet til GitHub (dev-cursor feil ignorert)${NC}"
+        echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
+    else
+        # Prøv en gang til med ren push
+        if git push origin main 2>&1 | grep -q "main -> main"; then
+            echo -e "${GREEN}✅ Pushet til GitHub${NC}"
+            echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
+        else
+            echo -e "${YELLOW}⚠️  Git push feilet${NC}"
+            exit 1
+        fi
+    fi
 else
     echo -e "${YELLOW}⚠️  Git push feilet: $PUSH_OUTPUT${NC}"
     exit 1
