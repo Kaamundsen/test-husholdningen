@@ -29,42 +29,49 @@ git commit -m "$COMMIT_MSG" || echo "⚠️  Ingen endringer å committe"
 echo -e "${BLUE}📤 Pusher til GitHub...${NC}"
 # Sett working directory eksplisitt
 cd "$(dirname "$0")" || exit 1
-# Push og fang både stdout og stderr, men ignorer dev-cursor feil
-PUSH_OUTPUT=$(git push origin main 2>&1)
+# Sjekk om vi er ahead før push
+WAS_AHEAD=$(git status | grep -q "ahead" && echo "yes" || echo "no")
+# Push - redirect stderr for å fange dev-cursor feil separat
+git push origin main > /tmp/gpdev_push_stdout.txt 2> /tmp/gpdev_push_stderr.txt
 PUSH_EXIT=$?
-# Sjekk om push faktisk var vellykket ved å se etter "main -> main" i outputen
-if echo "$PUSH_OUTPUT" | grep -q "main -> main"; then
+PUSH_STDOUT=$(cat /tmp/gpdev_push_stdout.txt)
+PUSH_STDERR=$(cat /tmp/gpdev_push_stderr.txt)
+# Sjekk om push faktisk fungerte
+if echo "$PUSH_STDOUT" | grep -q "main -> main"; then
     echo -e "${GREEN}✅ Pushet til GitHub${NC}"
     echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
-elif [ $PUSH_EXIT -eq 0 ]; then
-    # Exit code 0 betyr suksess, selv om vi ikke ser "main -> main"
-    echo -e "${GREEN}✅ Pushet til GitHub${NC}"
+elif [ "$WAS_AHEAD" = "yes" ] && ! git status | grep -q "ahead"; then
+    # Vi var ahead før, men ikke nå - push fungerte!
+    echo -e "${GREEN}✅ Pushet til GitHub (dev-cursor feil ignorert)${NC}"
     echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
-elif echo "$PUSH_OUTPUT" | grep -q "dev-cursor"; then
-    # Hvis det bare er dev-cursor feil, sjekk om vi faktisk er ahead
+elif echo "$PUSH_STDERR" | grep -q "dev-cursor" && [ $PUSH_EXIT -ne 0 ]; then
+    # Dev-cursor feil, men sjekk om vi fortsatt er ahead
     if git status | grep -q "ahead"; then
-        # Prøv en gang til - noen ganger fungerer det på andre forsøk
+        echo -e "${YELLOW}⚠️  Push feilet pga dev-cursor feil${NC}"
+        echo -e "${BLUE}💡 Prøver direkte push uten script...${NC}"
+        # Prøv direkte push som backup
         if git push origin main 2>&1 | grep -q "main -> main"; then
             echo -e "${GREEN}✅ Pushet til GitHub${NC}"
             echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
         else
-            echo -e "${YELLOW}⚠️  Dev-cursor feil, men sjekker status...${NC}"
-            # Sjekk om vi fortsatt er ahead - hvis ikke, ble det pushet
-            if ! git status | grep -q "ahead"; then
-                echo -e "${GREEN}✅ Pushet til GitHub (dev-cursor feil ignorert)${NC}"
-                echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
-            else
-                echo -e "${YELLOW}⚠️  Push feilet${NC}"
-                exit 1
-            fi
+            echo -e "${YELLOW}⚠️  Push feilet. Prøv manuelt: git push origin main${NC}"
+            exit 1
         fi
     else
-        echo -e "${GREEN}✅ Allerede oppdatert${NC}"
+        echo -e "${GREEN}✅ Pushet til GitHub (dev-cursor feil ignorert)${NC}"
+        echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
     fi
+elif [ $PUSH_EXIT -eq 0 ]; then
+    echo -e "${GREEN}✅ Pushet til GitHub${NC}"
+    echo -e "${GREEN}✅ Endringene vil automatisk deployes til testshoppen${NC}"
 else
-    echo -e "${YELLOW}⚠️  Git push feilet: $PUSH_OUTPUT${NC}"
+    echo -e "${YELLOW}⚠️  Git push feilet${NC}"
+    echo -e "${YELLOW}STDOUT: $PUSH_STDOUT${NC}"
+    echo -e "${YELLOW}STDERR: $PUSH_STDERR${NC}"
     exit 1
 fi
+# Rydd opp
+rm -f /tmp/gpdev_push_stdout.txt /tmp/gpdev_push_stderr.txt
 
 echo -e "${GREEN}✅ gpdev fullført!${NC}"
 
