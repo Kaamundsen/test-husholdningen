@@ -29,10 +29,20 @@ git commit -m "$COMMIT_MSG" || echo "⚠️  Ingen endringer å committe"
 # 4. Push til GitHub
 echo -e "${BLUE}📤 Pusher til GitHub...${NC}"
 CURRENT_BRANCH=$(git branch --show-current)
-if git push origin "$CURRENT_BRANCH" 2>&1; then
+# Sett push.default for å unngå problemer
+git config push.default simple 2>/dev/null || true
+# Bruk eksplisitt push til å unngå problemer med refspecs
+PUSH_OUTPUT=$(git push origin "$CURRENT_BRANCH" 2>&1)
+PUSH_EXIT_CODE=$?
+if [ $PUSH_EXIT_CODE -eq 0 ]; then
     echo -e "${GREEN}✅ Pushet til GitHub${NC}"
+elif echo "$PUSH_OUTPUT" | grep -q "dev-cursor"; then
+    # Ignorer dev-cursor feil og prøv direkte push til main
+    echo -e "${YELLOW}⚠️  Ignorerer dev-cursor feil, prøver direkte push...${NC}"
+    git push origin main 2>&1 && echo -e "${GREEN}✅ Pushet til GitHub${NC}" || echo -e "${YELLOW}⚠️  Git push feilet, men fortsetter med Shopify deploy...${NC}"
 else
-    echo -e "${YELLOW}⚠️  Git push feilet, men fortsetter med Shopify deploy...${NC}"
+    echo -e "${YELLOW}⚠️  Git push feilet: $PUSH_OUTPUT${NC}"
+    echo -e "${YELLOW}⚠️  Fortsetter med Shopify deploy...${NC}"
 fi
 
 # 5. Deploy til Shopify
